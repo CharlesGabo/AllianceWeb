@@ -126,8 +126,46 @@
             window.location.href = 'index.html';
         });
 
-        // API base path
+        // API base path (used only for local/dev server)
         const API_BASE = '/api/announcements';
+        const IS_GITHUB_PAGES = /\.github\.io$/.test(location.hostname);
+
+        function detectGithubRepo() {
+            if (window.GITHUB_OWNER && window.GITHUB_REPO) {
+                return { owner: window.GITHUB_OWNER, repo: window.GITHUB_REPO };
+            }
+            if (!IS_GITHUB_PAGES) return null;
+            const owner = location.hostname.split('.')[0];
+            const repo = location.pathname.replace(/^\/+/, '').split('/')[0] || 'AllianceWeb';
+            return { owner, repo };
+        }
+
+        async function fetchAnnouncementsFromGithubIssues() {
+            const repoInfo = detectGithubRepo();
+            if (!repoInfo) return null;
+            const { owner, repo } = repoInfo;
+            const url = `https://api.github.com/repos/${owner}/${repo}/issues?labels=announcement&state=open&per_page=100`;
+            try {
+                const resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' }, cache: 'no-store' });
+                if (!resp.ok) throw new Error('issues not available');
+                const issues = await resp.json();
+                const imageRegex = /!\[[^\]]*\]\(([^)]+)\)|\bhttps?:\/\/[^\s)]+\.(?:png|jpe?g|gif|webp|svg)\b/i;
+                return issues.map(i => {
+                    let image = null;
+                    const match = imageRegex.exec(i.body || '');
+                    if (match) image = match[1] || match[0];
+                    return {
+                        id: String(i.number),
+                        title: i.title,
+                        content: (i.body || '').replace(/!\[[^\]]*\]\(([^)]+)\)/g, '').trim(),
+                        date: new Date(i.created_at).getTime(),
+                        image
+                    };
+                });
+            } catch (_) {
+                return null;
+            }
+        }
 
         // Handle announcement form submission
         document.getElementById('announcementForm').addEventListener('submit', async function(e) {
@@ -138,6 +176,17 @@
             const imageFile = document.getElementById('announcementImage').files[0];
             
             try {
+                // On GitHub Pages, redirect to a prefilled GitHub Issue instead of calling the API
+                if (IS_GITHUB_PAGES) {
+                    const repoInfo = detectGithubRepo();
+                    if (!repoInfo) throw new Error('Repo not detected');
+                    const { owner, repo } = repoInfo;
+                    const issueUrl = `https://github.com/${owner}/${repo}/issues/new?labels=announcement&title=${encodeURIComponent(title)}&body=${encodeURIComponent(content + (imageFile ? '\n\n[Attach image after opening the issue]' : ''))}`;
+                    window.open(issueUrl, '_blank');
+                    alert('Opening GitHub Issue to post the announcement. After creating it, refresh this page.');
+                    return;
+                }
+
                 const formData = new FormData();
                 formData.append('title', title);
                 formData.append('content', content);
@@ -169,9 +218,14 @@
             announcementsList.innerHTML = '';
 
             try {
-                const resp = await fetch(API_BASE);
-                if (!resp.ok) throw new Error('Failed to load announcements');
-                const announcements = await resp.json();
+                let announcements = null;
+                if (IS_GITHUB_PAGES) {
+                    announcements = await fetchAnnouncementsFromGithubIssues();
+                } else {
+                    const resp = await fetch(API_BASE);
+                    if (!resp.ok) throw new Error('Failed to load announcements');
+                    announcements = await resp.json();
+                }
 
                 if (!announcements || announcements.length === 0) {
                     announcementsList.innerHTML = '<div class="text-center">No announcements yet.</div>';
