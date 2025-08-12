@@ -212,26 +212,15 @@
                     if (!resp.ok) continue;
                     const issues = (await resp.json()).filter(i => !i.pull_request);
                     if (!issues || issues.length === 0) continue;
-                    const markdownImgRegex = /!\[[^\]]*\]\(([^)]+)\)/i;
-                    const htmlImgRegex = /<img[^>]*src=["']([^"']+)["'][^>]*>/i;
-                    const urlImgRegex = /\bhttps?:\/\/[^\s)]+\.(?:png|jpe?g|gif|webp|svg)\b/i;
+                    const imageRegex = /!\[[^\]]*\]\(([^)]+)\)|\bhttps?:\/\/[^\s)]+\.(?:png|jpe?g|gif|webp|svg)\b/i;
                     return issues.map(i => {
-                        const body = i.body || '';
                         let image = null;
-                        const md = markdownImgRegex.exec(body);
-                        const html = htmlImgRegex.exec(body);
-                        const urlOnly = urlImgRegex.exec(body);
-                        if (md) image = md[1];
-                        else if (html) image = html[1];
-                        else if (urlOnly) image = urlOnly[0];
-                        const cleaned = body
-                          .replace(/!\[[^\]]*\]\(([^)]+)\)/g, '')
-                          .replace(/<img[^>]*>/gi, '')
-                          .trim();
+                        const match = imageRegex.exec(i.body || '');
+                        if (match) image = match[1] || match[0];
                         return {
                             id: String(i.number),
                             title: i.title,
-                            content: cleaned,
+                            content: (i.body || '').replace(/!\[[^\]]*\]\(([^)]+)\)/g, '').trim(),
                             date: new Date(i.created_at).getTime(),
                             image
                         };
