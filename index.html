@@ -171,42 +171,57 @@
             }
         });
 
-        // Render announcements from backend API
+        // Try to read announcements from the folder first (GitHub Pages/static),
+        // then fall back to the API for local development
+        async function fetchAnnouncementsFromFolder() {
+            try {
+                const resp = await fetch('Storage/Announcements/manifest.json', { cache: 'no-store' });
+                if (!resp.ok) throw new Error('manifest missing');
+                return await resp.json();
+            } catch (_) {
+                return null;
+            }
+        }
+
+        async function fetchAnnouncementsFromApi() {
+            try {
+                const resp = await fetch('/api/announcements', { cache: 'no-store' });
+                if (!resp.ok) throw new Error('api failed');
+                return await resp.json();
+            } catch (_) {
+                return null;
+            }
+        }
+
         async function renderAnnouncements() {
             const container = document.getElementById('announcementList');
             if (!container) return;
             
-            try {
-                const resp = await fetch('/api/announcements');
-                if (!resp.ok) throw new Error('Failed to load announcements');
-                const announcements = await resp.json();
+            const announcements = (await fetchAnnouncementsFromFolder()) || (await fetchAnnouncementsFromApi()) || [];
 
-                if (!announcements || announcements.length === 0) {
-                    container.innerHTML = '<div class="col-12"><p class="text-center animate__animated animate__fadeIn animate__slow">No announcements yet.</p></div>';
-                    return;
-                }
+            if (!announcements || announcements.length === 0) {
+                container.innerHTML = '<div class="col-12"><p class="text-center animate__animated animate__fadeIn animate__slow">No announcements yet.</p></div>';
+                return;
+            }
 
-                // Store in a global variable for modal access
-                window.__ANNOUNCEMENTS__ = announcements;
+            // Store in a global variable for modal access
+            window.__ANNOUNCEMENTS__ = announcements;
 
-                container.innerHTML = announcements.map((a, index) => `
-                    <div class="col-sm-12 col-md-6 col-lg-4 animate__animated animate__fadeInUp animate__slow" style="animation-delay: ${0.2 * (index + 1)}s">
-                        <div class="card h-100 announcement-card" role="button" onclick="showAnnouncementDetails(${index})">
-                            ${a.image ? `<img src="${a.image}" class="card-img-top" alt="Announcement Image" loading="lazy">` : ''}
-                            <div class="card-body">
-                                <h5 class="card-title">${a.title}</h5>
-                                <p class="card-text text-truncate">${a.content}</p>
-                                <p class="card-text"><small class="text-muted">${new Date(a.date).toLocaleString()}</small></p>
-                                <div class="text-end mt-3">
-                                    <small class="text-primary">Click to read more</small>
-                                </div>
+            container.innerHTML = announcements.map((a, index) => `
+                <div class="col-sm-12 col-md-6 col-lg-4 animate__animated animate__fadeInUp animate__slow" style="animation-delay: ${0.2 * (index + 1)}s">
+                    <div class="card h-100 announcement-card" role="button" onclick="showAnnouncementDetails(${index})">
+                        ${a.image ? `<img src="${a.image}" class="card-img-top" alt="Announcement Image" loading="lazy">` : ''}
+                        <div class="card-body">
+                            <h5 class="card-title">${a.title}</h5>
+                            <p class="card-text text-truncate">${a.content}</p>
+                            <p class="card-text"><small class="text-muted">${new Date(a.date).toLocaleString()}</small></p>
+                            <div class="text-end mt-3">
+                                <small class="text-primary">Click to read more</small>
                             </div>
                         </div>
                     </div>
-                `).join('');
-            } catch (e) {
-                container.innerHTML = '<div class="col-12"><p class="text-center text-danger">Failed to load announcements.</p></div>';
-            }
+                </div>
+            `).join('');
 
             // Add hover effect styles
             const style = document.createElement('style');

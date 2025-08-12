@@ -27,6 +27,19 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// Maintain a manifest.json of all announcements for static hosting
+function writeManifest() {
+    try {
+        const announcements = readAnnouncements();
+        fs.writeFileSync(
+            path.join('./Storage/Announcements', 'manifest.json'),
+            JSON.stringify(announcements, null, 2)
+        );
+    } catch (e) {
+        console.error('Failed to write manifest.json', e);
+    }
+}
+
 // Helper function to read announcements
 function readAnnouncements() {
     const dir = './Storage/Announcements';
@@ -73,13 +86,15 @@ app.post('/api/announcements', upload.single('image'), (req, res) => {
             title,
             content,
             date,
-            image: req.file ? `/Storage/Announcements/${req.file.filename}` : null
+            image: req.file ? `Storage/Announcements/${req.file.filename}` : null
         };
         
         fs.writeFileSync(
             path.join('./Storage/Announcements', `${id}.json`),
             JSON.stringify(announcement, null, 2)
         );
+        // Update manifest
+        writeManifest();
         
         res.status(201).json(announcement);
     } catch (error) {
@@ -109,6 +124,8 @@ app.delete('/api/announcements/:id', (req, res) => {
             
             // Delete the JSON file
             fs.unlinkSync(filePath);
+            // Update manifest
+            writeManifest();
             res.status(204).send();
         } else {
             res.status(404).json({ error: 'Announcement not found' });
@@ -121,4 +138,6 @@ app.delete('/api/announcements/:id', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
+    // Ensure manifest exists at startup
+    writeManifest();
 }); 
