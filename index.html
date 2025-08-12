@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Alliance Web - Connecting, Empowering, and Inspiring Our Community">
+    <meta name="theme-color" content="#181818">
+    <title>Alliance Web</title>
+    <style>
+        /* Preload styles to prevent FOUC (Flash of Unstyled Content) */
+        .preload * {
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -ms-transition: none !important;
+            -o-transition: none !important;
+            transition: none !important;
+        }
+        
+        /* Custom animation delays */
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+        .delay-4 { animation-delay: 0.8s; }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Inter:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="preload">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="Photos/PHILSCA-LOGO-WINGS.png" alt="Aisers Logo" class="animate__animated animate__fadeIn delay-1">
+                <span class="animate__animated animate__fadeIn delay-2">Alliance Web</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item animate__animated animate__fadeIn delay-1">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item animate__animated animate__fadeIn delay-2">
+                        <a class="nav-link" href="merchandise/index.html">Merchandise</a>
+                    </li>
+                    <li class="nav-item animate__animated animate__fadeIn delay-2">
+                        <a class="nav-link" href="#announcements">Announcements</a>
+                    </li>
+                    <li class="nav-item animate__animated animate__fadeIn delay-3">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item animate__animated animate__fadeIn delay-4">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#adminLoginModal">Admin Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section" id="home">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInDown animate__slow delay-2">Welcome to Alliance Web</h1>
+            <p class="lead animate__animated animate__fadeInUp animate__slow delay-3">Connecting, Empowering, and Inspiring Our Community</p>
+            <a href="#announcements" class="btn btn-primary btn-lg animate__animated animate__fadeInUp animate__slow delay-4">View Announcements</a>
+        </div>
+    </header>
+
+    <!-- Announcements Section -->
+    <section id="announcements" class="py-5">
+        <div class="container">
+            <h2 class="animate__animated animate__fadeInDown animate__slow">Latest Announcements</h2>
+            <div id="announcementList" class="row g-4 justify-content-center">
+                <!-- Announcements will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="animate__animated animate__fadeInDown animate__slow">About Alliance Web</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <p class="about-text animate__animated animate__fadeInUp animate__slow delay-2">
+                        Alliance Web is dedicated to fostering collaboration, growth, and innovation within our organization and beyond. Our platform serves as a hub for resources, events, and connections, all designed to empower our members and strengthen our community spirit. Join us as we build a brighter future together.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p class="animate__animated animate__fadeInUp animate__slow">&copy; 2025 Alliance Web. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Announcement Details Modal -->
+    <div class="modal fade" id="announcementModal" tabindex="-1" aria-labelledby="announcementModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="announcementModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="announcement-modal-image mb-4">
+                        <img src="" alt="Announcement Image" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="announcement-modal-content">
+                        <p class="announcement-text"></p>
+                        <div class="announcement-details mt-4">
+                            <small class="text-muted d-block">Posted on: <span class="announcement-date"></span></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal fade" id="adminLoginModal" tabindex="-1" aria-labelledby="adminLoginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adminLoginModalLabel">Admin Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminLoginForm">
+                        <div class="mb-3">
+                            <label for="adminUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="adminUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="adminPassword" required>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Remove preload class after page loads to enable transitions
+        window.addEventListener('load', function() {
+            document.body.classList.remove('preload');
+        });
+
+        // Add scrolled class to navbar on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Render announcements from backend API
+        async function renderAnnouncements() {
+            const container = document.getElementById('announcementList');
+            if (!container) return;
+            
+            try {
+                const resp = await fetch('/api/announcements');
+                if (!resp.ok) throw new Error('Failed to load announcements');
+                const announcements = await resp.json();
+
+                if (!announcements || announcements.length === 0) {
+                    container.innerHTML = '<div class="col-12"><p class="text-center animate__animated animate__fadeIn animate__slow">No announcements yet.</p></div>';
+                    return;
+                }
+
+                // Store in a global variable for modal access
+                window.__ANNOUNCEMENTS__ = announcements;
+
+                container.innerHTML = announcements.map((a, index) => `
+                    <div class="col-sm-12 col-md-6 col-lg-4 animate__animated animate__fadeInUp animate__slow" style="animation-delay: ${0.2 * (index + 1)}s">
+                        <div class="card h-100 announcement-card" role="button" onclick="showAnnouncementDetails(${index})">
+                            ${a.image ? `<img src="${a.image}" class="card-img-top" alt="Announcement Image" loading="lazy">` : ''}
+                            <div class="card-body">
+                                <h5 class="card-title">${a.title}</h5>
+                                <p class="card-text text-truncate">${a.content}</p>
+                                <p class="card-text"><small class="text-muted">${new Date(a.date).toLocaleString()}</small></p>
+                                <div class="text-end mt-3">
+                                    <small class="text-primary">Click to read more</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<div class="col-12"><p class="text-center text-danger">Failed to load announcements.</p></div>';
+            }
+
+            // Add hover effect styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .announcement-card {
+                    cursor: pointer;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .announcement-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Function to show announcement details in modal
+        function showAnnouncementDetails(index) {
+            const announcements = window.__ANNOUNCEMENTS__ || [];
+            const announcement = announcements[index];
+            if (!announcement) return;
+
+            // Update modal content
+            document.getElementById('announcementModalLabel').textContent = announcement.title;
+            const imgEl = document.querySelector('.announcement-modal-image img');
+            if (announcement.image) {
+                imgEl.src = announcement.image;
+                imgEl.parentElement.style.display = '';
+            } else {
+                imgEl.parentElement.style.display = 'none';
+            }
+            document.querySelector('.announcement-text').textContent = announcement.content;
+            document.querySelector('.announcement-date').textContent = new Date(announcement.date).toLocaleString();
+
+            // Show modal with animation
+            const modal = new bootstrap.Modal(document.getElementById('announcementModal'));
+            modal.show();
+
+            // Add animation to modal content
+            const modalContent = document.querySelector('.modal-content');
+            modalContent.classList.add('animate__animated', 'animate__fadeIn', 'animate__faster');
+            modalContent.addEventListener('animationend', () => {
+                modalContent.classList.remove('animate__animated', 'animate__fadeIn', 'animate__faster');
+            });
+        }
+
+        // Initial render and setup auto-refresh
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAnnouncements();
+            // Refresh announcements every 30 seconds
+            setInterval(renderAnnouncements, 30000);
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Close mobile menu when clicking a link
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) {
+                        bootstrap.Collapse.getInstance(navbarCollapse)?.hide();
+                    }
+                });
+            });
+
+            // Admin Login Form Handler
+            document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('adminUsername').value;
+                const password = document.getElementById('adminPassword').value;
+
+                if (username === 'AISERS' && password === 'AISERS2526') {
+                    sessionStorage.setItem('adminLoggedIn', 'true');
+                    window.location.href = 'admin-login.html';
+                } else {
+                    alert('Invalid credentials. Please try again.');
+                }
+            });
+        });
+    </script>
+
+    <style>
+        /* Modal styles */
+        .modal-content {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--gold);
+            background: var(--black);
+            padding: 1.5rem;
+        }
+
+        .modal-header .modal-title {
+            color: var(--gold);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .announcement-modal-image {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .announcement-modal-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .announcement-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--black);
+        }
+
+        .announcement-details {
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .modal-footer {
+            border-top: none;
+            padding: 1.5rem;
+        }
+
+        .modal-footer .btn {
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-secondary {
+            background: var(--black);
+            border: none;
+            color: var(--gold);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        /* Admin Login Modal Styles */
+        #adminLoginModal .modal-content {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        #adminLoginModal .modal-header {
+            border-bottom: 2px solid var(--gold);
+            background: var(--black);
+            padding: 1.5rem;
+        }
+
+        #adminLoginModal .modal-title {
+            color: var(--gold);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        #adminLoginModal .modal-body {
+            padding: 2rem;
+        }
+
+        #adminLoginModal .btn-primary {
+            background: var(--black);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            margin-left: 10px;
+        }
+
+        #adminLoginModal .btn-primary:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+
+        #adminLoginModal .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--black);
+            color: var(--black);
+        }
+
+        #adminLoginModal .btn-secondary:hover {
+            background: var(--black);
+            color: var(--gold);
+        }
+
+        #adminLoginModal .form-control:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 0.2rem rgba(218, 165, 32, 0.25);
+        }
+    </style>
+</body>
+</html>
