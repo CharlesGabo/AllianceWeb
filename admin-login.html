@@ -144,27 +144,33 @@
             const repoInfo = detectGithubRepo();
             if (!repoInfo) return null;
             const { owner, repo } = repoInfo;
-            const url = `https://api.github.com/repos/${owner}/${repo}/issues?labels=announcement&state=open&per_page=100`;
-            try {
-                const resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' }, cache: 'no-store' });
-                if (!resp.ok) throw new Error('issues not available');
-                const issues = await resp.json();
-                const imageRegex = /!\[[^\]]*\]\(([^)]+)\)|\bhttps?:\/\/[^\s)]+\.(?:png|jpe?g|gif|webp|svg)\b/i;
-                return issues.map(i => {
-                    let image = null;
-                    const match = imageRegex.exec(i.body || '');
-                    if (match) image = match[1] || match[0];
-                    return {
-                        id: String(i.number),
-                        title: i.title,
-                        content: (i.body || '').replace(/!\[[^\]]*\]\(([^)]+)\)/g, '').trim(),
-                        date: new Date(i.created_at).getTime(),
-                        image
-                    };
-                });
-            } catch (_) {
-                return null;
+            const labelQuery = 'announcement,announcements,Announcement,Announcements';
+            const urls = [
+                `https://api.github.com/repos/${owner}/${repo}/issues?labels=${encodeURIComponent(labelQuery)}&state=open&per_page=100`,
+                `https://api.github.com/repos/${owner}/${repo}/issues?state=open&per_page=50`
+            ];
+            for (const url of urls) {
+                try {
+                    const resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' }, cache: 'no-store' });
+                    if (!resp.ok) continue;
+                    const issues = (await resp.json()).filter(i => !i.pull_request);
+                    if (!issues || issues.length === 0) continue;
+                    const imageRegex = /!\[[^\]]*\]\(([^)]+)\)|\bhttps?:\/\/[^\s)]+\.(?:png|jpe?g|gif|webp|svg)\b/i;
+                    return issues.map(i => {
+                        let image = null;
+                        const match = imageRegex.exec(i.body || '');
+                        if (match) image = match[1] || match[0];
+                        return {
+                            id: String(i.number),
+                            title: i.title,
+                            content: (i.body || '').replace(/!\[[^\]]*\]\(([^)]+)\)/g, '').trim(),
+                            date: new Date(i.created_at).getTime(),
+                            image
+                        };
+                    });
+                } catch (_) {}
             }
+            return null;
         }
 
         // Handle announcement form submission
